@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>聽音作答系統</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🎧 聽音作答系統</h1>
+
+    <div id="startScreen">
+      <input type="text" id="username" placeholder="請輸入你的姓名" />
+      <button onclick="startQuiz()">開始答題</button>
+    </div>
+
+    <div id="quizScreen" style="display:none">
+      <p id="questionCounter"></p>
+      <audio id="audioPlayer" controls></audio>
+
+      <div id="optionsContainer"></div>
+
+      <div id="feedback"></div>
+    </div>
+
+    <div id="resultScreen" style="display:none">
+      <h2>✅ 答題完成！</h2>
+      <button onclick="downloadResults()">下載作答紀錄</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
