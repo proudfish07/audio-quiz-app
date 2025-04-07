@@ -117,20 +117,6 @@ function endQuiz() {
   });
 }
 
-function downloadResults() {
-  let csvContent = "姓名,題目,使用者答案,正確答案,是否正確,時間\n";
-  userAnswers.forEach(ans => {
-    csvContent += `${username},${ans.question},${ans.userAnswer},${ans.correctAnswer},${ans.isCorrect ? '正確' : '錯誤'},${ans.time}\n`;
-  });
-
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${username}_quiz_results.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 function shuffleArray(array) {
   const newArray = array.slice();
