@@ -15,7 +15,14 @@ async function startQuiz() {
   }
 
   const res = await fetch("answers.json");
-  answers = await res.json();
+  const answersArray = await res.json();
+
+  // 將陣列轉為以音檔檔名為 key 的物件
+  answers = {};
+  answersArray.forEach(item => {
+    answers[item.id] = item.answer;
+  });
+
   audioList = Object.keys(answers);
 
   // 隨機抽取題目
@@ -38,7 +45,7 @@ function loadQuestion() {
 
   const audioFile = shuffledList[currentIndex];
   const audioPlayer = document.getElementById("audioPlayer");
-  audioPlayer.src = `audio/${audioFile}.mp3`;
+  audioPlayer.src = `audio/${audioFile}`;  // 不要加副檔名
   audioPlayer.load();
 
   const correctAnswer = answers[audioFile];
