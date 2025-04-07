@@ -126,3 +126,22 @@ function shuffleArray(array) {
   }
   return newArray;
 }
+
+function restartQuiz() {
+  // 重設狀態
+  currentIndex = 0;
+  userAnswers = [];
+  shuffledList = [];
+
+  // 顯示起始畫面，隱藏其他畫面
+  document.getElementById("startScreen").style.display = "block";
+  document.getElementById("quizScreen").style.display = "none";
+  document.getElementById("resultScreen").style.display = "none";
+
+  // 清空表格與文字
+  document.getElementById("resultTable").innerHTML = "";
+  document.getElementById("finalScore").innerText = "";
+
+  // 清空輸入的名字
+  document.getElementById("username").value = "";
+}
