@@ -25,9 +25,11 @@
     </div>
 
     <div id="resultScreen" style="display:none">
-      <h2>✅ 測驗完成！</h2>
+      <h2>測驗結束</h2>
 	  <p id="finalScore"></p>
-      <button onclick="downloadResults()">下載結果 CSV</button>
+      <table id="resultTable" border="1" style="width:100%; text-align: center; margin-top: 20px;">
+	  </table>
+	  <button onclick="restartQuiz()" style="margin-top: 20px;">🔁 重新作答</button>
     </div>
   </div>
 

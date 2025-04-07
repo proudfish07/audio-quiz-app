@@ -92,6 +92,29 @@ function endQuiz() {
 
   const score = userAnswers.filter(ans => ans.isCorrect).length * 10;
   document.getElementById("finalScore").innerText = `得分：${score} 分`;
+
+  const resultTable = document.getElementById("resultTable");
+  resultTable.innerHTML = `
+    <tr>
+      <th>題目檔案</th>
+      <th>你的答案</th>
+      <th>正確答案</th>
+      <th>是否正確</th>
+      <th>作答時間</th>
+    </tr>
+  `;
+
+  userAnswers.forEach(ans => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${ans.question}</td>
+      <td>${ans.userAnswer}</td>
+      <td>${ans.correctAnswer}</td>
+      <td>${ans.isCorrect ? "✅ 正確" : "❌ 錯誤"}</td>
+      <td>${new Date(ans.time).toLocaleString()}</td>
+    `;
+    resultTable.appendChild(row);
+  });
 }
 
 function downloadResults() {
