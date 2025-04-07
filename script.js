@@ -5,6 +5,8 @@ let shuffledList = [];
 let userAnswers = [];
 let username = "";
 
+const QUESTION_COUNT = 10;
+
 async function startQuiz() {
   username = document.getElementById("username").value.trim();
   if (!username) {
@@ -12,13 +14,12 @@ async function startQuiz() {
     return;
   }
 
-  // 載入答案檔案
   const res = await fetch("answers.json");
   answers = await res.json();
   audioList = Object.keys(answers);
 
-  // 隨機排序題目
-  shuffledList = shuffleArray(audioList);
+  // 隨機抽取題目
+  shuffledList = shuffleArray(audioList).slice(0, QUESTION_COUNT);
 
   document.getElementById("startScreen").style.display = "none";
   document.getElementById("quizScreen").style.display = "block";
@@ -35,17 +36,20 @@ function loadQuestion() {
   document.getElementById("questionCounter").innerText =
     `題目 ${currentIndex + 1} / ${shuffledList.length}`;
 
+  const audioFile = shuffledList[currentIndex];
   const audioPlayer = document.getElementById("audioPlayer");
-  audioPlayer.src = `audio/${shuffledList[currentIndex]}`;
+  audioPlayer.src = `audio/${audioFile}.mp3`;
   audioPlayer.load();
 
-  const currentQuestion = answers[shuffledList[currentIndex]];
+  const correctAnswer = answers[audioFile];
+  const allAnswers = [...new Set(Object.values(answers))];
+  const incorrectChoices = shuffleArray(allAnswers.filter(a => a !== correctAnswer)).slice(0, 3);
+  const choices = shuffleArray([correctAnswer, ...incorrectChoices]);
+
   const optionsContainer = document.getElementById("optionsContainer");
   optionsContainer.innerHTML = "";
 
-  // 隨機打亂選項
-  const shuffledOptions = shuffleArray(currentQuestion.choices);
-  shuffledOptions.forEach((option) => {
+  choices.forEach((option) => {
     const button = document.createElement("button");
     button.textContent = option;
     button.onclick = () => submitAnswer(option);
@@ -54,12 +58,13 @@ function loadQuestion() {
 }
 
 function submitAnswer(userInput) {
-  const correctAnswer = answers[shuffledList[currentIndex]].answer;
-  const isCorrect = userInput.toLowerCase() === correctAnswer.toLowerCase();
+  const currentAudio = shuffledList[currentIndex];
+  const correctAnswer = answers[currentAudio];
+  const isCorrect = userInput === correctAnswer;
   const timestamp = new Date().toISOString();
 
   userAnswers.push({
-    question: shuffledList[currentIndex],
+    question: currentAudio,
     userAnswer: userInput,
     correctAnswer: correctAnswer,
     isCorrect: isCorrect,
@@ -77,18 +82,22 @@ function submitAnswer(userInput) {
 function endQuiz() {
   document.getElementById("quizScreen").style.display = "none";
   document.getElementById("resultScreen").style.display = "block";
+
+  const score = userAnswers.filter(ans => ans.isCorrect).length * 10;
+  document.getElementById("finalScore").innerText = `得分：${score} 分`;
 }
 
 function downloadResults() {
-  const data = {
-    username: username,
-    results: userAnswers
-  };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  let csvContent = "姓名,題目,使用者答案,正確答案,是否正確,時間\n";
+  userAnswers.forEach(ans => {
+    csvContent += `${username},${ans.question},${ans.userAnswer},${ans.correctAnswer},${ans.isCorrect ? '正確' : '錯誤'},${ans.time}\n`;
+  });
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${username}_quiz_results.json`;
+  a.download = `${username}_quiz_results.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
