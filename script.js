@@ -8,7 +8,7 @@ let username = "";
 const QUESTION_COUNT = 10;
 
 async function startQuiz() {
-  username = "參與者"
+  username = "參與者";
   }
 
   const res = await fetch("answers.json");
