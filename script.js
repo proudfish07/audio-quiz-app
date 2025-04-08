@@ -116,7 +116,7 @@ function restartQuiz() {
 }
 
 function submitResultsToGoogleForm() {
-  const endpoint = "https://script.google.com/macros/s/AKfycbx1YpCcN8o2TBA8wXluGqMDsGj2buQSHfu_mq3OdQnTtuq5A6gTylvcSlkataQLaVyb6g/exec";
+  const endpoint = "https://script.google.com/macros/s/AKfycbw6fRFcIr1SeJ5fKTj_umGnj0CEHsNBTwMLrZXzNsA2Xft70eVlZfmM3VYLHiYSIBEBMg/exec";
 
   const payload = userAnswers.map(ans => ({
     name: username,
