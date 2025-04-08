@@ -35,7 +35,7 @@ async function startQuiz() {
 
 function loadQuestion() {
   if (currentIndex >= shuffledList.length) {
-    endQuiz();
+    showResults();
     return;
   }
 
@@ -86,37 +86,6 @@ function submitAnswer(userInput) {
   setTimeout(loadQuestion, 1000);
 }
 
-function endQuiz() {
-  document.getElementById("quizScreen").style.display = "none";
-  document.getElementById("resultScreen").style.display = "block";
-
-  const score = userAnswers.filter(ans => ans.isCorrect).length * 10;
-  document.getElementById("finalScore").innerText = `得分：${score} 分`;
-
-  const resultTable = document.getElementById("resultTable");
-  resultTable.innerHTML = `
-    <tr>
-      <th>題目檔案</th>
-      <th>你的答案</th>
-      <th>正確答案</th>
-      <th>是否正確</th>
-      <th>作答時間</th>
-    </tr>
-  `;
-
-  userAnswers.forEach(ans => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${ans.question}</td>
-      <td>${ans.userAnswer}</td>
-      <td>${ans.correctAnswer}</td>
-      <td>${ans.isCorrect ? "✅ 正確" : "❌ 錯誤"}</td>
-      <td>${new Date(ans.time).toLocaleString()}</td>
-    `;
-    resultTable.appendChild(row);
-  });
-}
-
 
 function shuffleArray(array) {
   const newArray = array.slice();
@@ -144,4 +113,68 @@ function restartQuiz() {
 
   // 清空輸入的名字
   document.getElementById("username").value = "";
+}
+
+function submitResultsToGoogleForm() {
+  const endpoint = "https://script.google.com/macros/s/AKfycbx1YpCcN8o2TBA8wXluGqMDsGj2buQSHfu_mq3OdQnTtuq5A6gTylvcSlkataQLaVyb6g/exec";
+
+  const payload = userAnswers.map(ans => ({
+    name: username,
+    question: ans.question,
+    userAnswer: ans.userAnswer,
+    correctAnswer: ans.correctAnswer,
+    isCorrect: ans.isCorrect,
+    time: ans.time
+  }));
+
+  fetch(endpoint, {
+    method: "POST",
+    body: JSON.stringify(payload),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+  .then(res => res.text())
+  .then(response => {
+    console.log("已送出至 Google 表單：", response);
+  })
+  .catch(err => {
+    console.error("送出資料失敗", err);
+  });
+}
+
+
+function showResults() {
+  document.getElementById("quizScreen").style.display = "none";
+  document.getElementById("resultScreen").style.display = "block";
+
+  const correctCount = userAnswers.filter(ans => ans.isCorrect).length;
+  const total = userAnswers.length;
+  document.getElementById("finalScore").innerText = `你的得分是 ${correctCount} / ${total}`;
+
+  const table = document.getElementById("resultTable");
+  table.innerHTML = `
+    <tr>
+      <th>題號</th>
+      <th>你的答案</th>
+      <th>正確答案</th>
+      <th>正確與否</th>
+      <th>作答時間</th>
+    </tr>
+  `;
+
+  userAnswers.forEach((ans, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${ans.userAnswer}</td>
+      <td>${ans.correctAnswer}</td>
+      <td>${ans.isCorrect ? "✅" : "❌"}</td>
+      <td>${ans.time}</td>
+    `;
+    table.appendChild(row);
+  });
+
+  // 送出到 Google 表單
+  submitResultsToGoogleForm();
 }
