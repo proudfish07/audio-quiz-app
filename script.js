@@ -8,10 +8,7 @@ let username = "";
 const QUESTION_COUNT = 10;
 
 async function startQuiz() {
-  username = document.getElementById("username").value.trim();
-  if (!username) {
-    alert("請輸入姓名");
-    return;
+  username = "參與者"
   }
 
   const res = await fetch("answers.json");
